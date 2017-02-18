@@ -15,19 +15,21 @@ type Member struct {
 	Display      string     `datastore:"display,noindex"`
 	CreateDate   time.Time  `datastore:"create_date,noindex"`
 	Count        int64      `datastore:"count,noindex"`
+	SendCount    int64      `datastore:"send_count,noindex"`
+	RecvCount    int64      `datastore:"recv_count,noindex"`
 	AccessDate   time.Time  `datastore:"access_date,noindex"`
 	LastSendDate time.Time  `datastore:"last_send_date,noindex"`
 }
 
 // roomId + ":" + endpointは文字列として長すぎるので、ハッシュを使ってキーを作成する
-func roomMemberToKeyString(roomId, endpoint string) string {
+func RoomMemberToKeyString(roomId, endpoint string) string {
 	h := fnv.New64a()
 	h.Write([]byte(roomId + ":" + endpoint))
 	return base64.StdEncoding.EncodeToString(h.Sum(nil))
 }
 
 func MemberTouch(ctx context.Context, roomId, endpoint, display string) {
-	key := roomMemberToKeyString(roomId, endpoint)
+	key := RoomMemberToKeyString(roomId, endpoint)
 	m := Member{Key:key}
 	g := goon.FromContext(ctx)
 
@@ -50,7 +52,7 @@ func MemberTouch(ctx context.Context, roomId, endpoint, display string) {
 }
 
 func GetFromEndpoint(ctx context.Context, roomId, endpoint string) (Member, error) {
-	key := roomMemberToKeyString(roomId, endpoint)
+	key := RoomMemberToKeyString(roomId, endpoint)
 	m := Member{Key:key}
 	g := goon.FromContext(ctx)
 
@@ -60,6 +62,18 @@ func GetFromEndpoint(ctx context.Context, roomId, endpoint string) (Member, erro
 
 func (m *Member) CountUp(ctx context.Context) {
 	m.Count++;
+	g := goon.FromContext(ctx)
+	g.Put(m)
+}
+
+func (m *Member) SendIncrement(ctx context.Context) {
+	m.SendCount++;
+	g := goon.FromContext(ctx)
+	g.Put(m)
+}
+
+func (m *Member) RecvIncrement(ctx context.Context) {
+	m.RecvCount++;
 	g := goon.FromContext(ctx)
 	g.Put(m)
 }

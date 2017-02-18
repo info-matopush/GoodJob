@@ -49,6 +49,7 @@ func registHandler(w http.ResponseWriter, r *http.Request) {
 	roomId := r.FormValue("roomId")
 	data.MemberTouch(ctx, roomId, e, d)
 
+	// todo:以下のwait処理はいずれJavaScript側に持っていく
 	// Memberに反映されるのをちょっとだけ待つ
 	time.Sleep(1 * time.Second)
 

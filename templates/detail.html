@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charset="utf-8" />
+        <title>Good Job - 褒めたい、褒められたい -</title>
+        <link rel="stylesheet" href="/style/bootstrap.min.css" />
+        <link rel="stylesheet" href="/style/webpush.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <BR>
+            <div id="detail"><BR>
+                <dl class="dl-horizontal">
+                    <dt>ニックネーム</dt><dd>{{.Display}}</dd>
+                    <dt>作成日</dt><dd>{{.CreateDate}}</dd>
+                    <dt>送信ポイント</dt><dd>{{.SendCount}}</dd>
+                    <dt>受信ポイント</dt><dd>{{.RecvCount}}</dd>
+                </dl>
+            </div>
+            <h2>Good Job!を見る</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Good Job!を送った人</th>
+                            <th>メッセージ</th>
+                            <th>日時</th>
+                        </tr>
+                        </thead>
+                        <tbody id="sendList">
+                            {{range .ToMessage}}
+                            <tr>
+                                <td>{{.ToDisplay}}</td>
+                                <td>{{.Message}}</td>
+                                <td>{{.Date}}</td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Good Job!をくれた人</th>
+                            <th>メッセージ</th>
+                            <th>日時</th>
+                        </tr>
+                        </thead>
+                        <tbody id="recvList">
+                            {{range .FromMessage}}
+                            <tr>
+                                <td>{{.FromDisplay}}</td>
+                                <td>{{.Message}}</td>
+                                <td>{{.Date}}</td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+
+                </div>
+                <BR>
+            </div>
+        </div>
+    </body>
+</html>

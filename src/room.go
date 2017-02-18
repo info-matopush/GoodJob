@@ -96,3 +96,35 @@ func showRoomHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func enterRoomHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := appengine.NewContext(r)
+
+	roomId := r.FormValue("r")
+
+	g := goon.NewGoon(r)
+	room := data.Room{RoomId:roomId}
+	err := g.Get(&room)
+	if err != nil {
+		log.Infof(ctx, "datastore get error. %v", err)
+		return;
+	}
+
+	ri := RoomInfo{
+		RoomId:      room.RoomId,
+		Url:         "",
+		Description: room.Description,
+		CreateDate:  room.CreateDate,
+	}
+	t, err := template.ParseFiles("templates/enter.html")
+	if err != nil {
+		log.Infof(ctx, "template parse file error. %v", err)
+		return
+	}
+
+	err = t.Execute(w, ri)
+	if err != nil {
+		log.Infof(ctx, "template execute error. %v", err)
+		return
+	}
+}
+

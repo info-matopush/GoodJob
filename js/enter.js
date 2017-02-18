@@ -197,7 +197,7 @@ function enablePushRequest(sub) {
                 button.onclick = function(){sendMessage(endpoint)};
 
                 let nickname = document.createElement('a');
-                nickname.href = json[i].DetailUrl;
+                nickname.href = '/d?m=' + json[i].Key;
                 nickname.textContent = display;
 
                 let tr = document.createElement('tr');
@@ -210,8 +210,11 @@ function enablePushRequest(sub) {
                 td2.appendChild(nickname);
                 tr.appendChild(td2);
                 let td3 = document.createElement('td');
-                td3.textContent = json[i].Count;
+                td3.textContent = json[i].SendCount;
                 tr.appendChild(td3);
+                let td4 = document.createElement('td');
+                td4.textContent = json[i].RecvCount;
+                tr.appendChild(td4);
 
                 _('memberList').appendChild(tr);
             }

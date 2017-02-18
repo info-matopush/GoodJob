@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"time"
 	"math/rand"
-	"html/template"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/datastore"
@@ -12,6 +11,7 @@ import (
 	"src/data"
 	"encoding/json"
 	"src/data/endpoint"
+	"html/template"
 )
 
 func init() {
@@ -26,34 +26,48 @@ func init() {
 	http.HandleFunc("/api/test", testHandler)
 	http.HandleFunc("/s", showRoomHandler)
 	http.HandleFunc("/e", enterRoomHandler)
+	http.HandleFunc("/d", detailHandler)
 }
 
-func enterRoomHandler(w http.ResponseWriter, r *http.Request) {
+type DetailData struct {
+	Display      string
+	CreateDate   time.Time
+	SendCount    int64
+	RecvCount    int64
+	ToMessage    []data.Message
+	FromMessage  []data.Message
+}
+
+func detailHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 
-	roomId := r.FormValue("r")
+	memberKey := r.FormValue("m")
 
 	g := goon.NewGoon(r)
-	room := data.Room{RoomId:roomId}
-	err := g.Get(&room)
+	member := data.Member{Key:memberKey}
+	err := g.Get(&member)
 	if err != nil {
 		log.Infof(ctx, "datastore get error. %v", err)
 		return;
 	}
+	message1, message2 := data.GetAllMessage(ctx, memberKey)
 
-	ri := RoomInfo{
-		RoomId:      room.RoomId,
-		Url:         "",
-		Description: room.Description,
-		CreateDate:  room.CreateDate,
+	detail := DetailData{
+		Display:     member.Display,
+		CreateDate:  member.CreateDate,
+		SendCount:   member.SendCount,
+		RecvCount:   member.RecvCount,
+		ToMessage:   message1,
+		FromMessage: message2,
 	}
-	t, err := template.ParseFiles("templates/enter.html")
+
+	t, err := template.ParseFiles("templates/detail.html")
 	if err != nil {
 		log.Infof(ctx, "template parse file error. %v", err)
 		return
 	}
 
-	err = t.Execute(w, ri)
+	err = t.Execute(w, detail)
 	if err != nil {
 		log.Infof(ctx, "template execute error. %v", err)
 		return
@@ -72,21 +86,33 @@ func sendHandler(_ http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+	// 送信カウントを+1
+	fromMember.SendIncrement(ctx)
 
+	toMember, err := data.GetFromEndpoint(ctx, roomId, to)
+	if err != nil {
+		return
+	}
+	// 受信カウントを+1
+	toMember.RecvIncrement(ctx)
+
+	// メッセージを登録
+	data.AddMessage(ctx, roomId, fromMember, toMember, message)
+
+	// 受信側へPushするのに必要な情報を取得する
 	toEndpoint, err := endpoint.Get(ctx, to)
 	if err != nil {
 		return
 	}
 
+	// Pushを実行する
 	n := Notification{
 		Title: "「" + fromMember.Display + "」さんからGood Job!",
 		Body:  message,
 		Url:   r.Referer(),
 		Icon:  "/img/icon_001500_256.png",
 	}
-
 	SendPush(ctx, &n, toEndpoint)
-	fromMember.CountUp(ctx)
 }
 
 func listHandler(w http.ResponseWriter, r *http.Request) {

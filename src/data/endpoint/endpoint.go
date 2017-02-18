@@ -19,15 +19,15 @@ type EndpointInfo struct {
 }
 
 type physicalEndpointInfo struct {
-	Key        string    `datastore:"-"           goon:"id"`
-	Endpoint   string    `datastore:"endpoint,    noindex"`
-	P256dh     []byte    `datastore:"p256dh,      noindex"`
-	Auth       []byte    `datastore:"auth,        noindex"`
-	CreateDate time.Time `datastore:"create_date, noindex"`
-	AccessDate time.Time `datastore:"access_date, noindex"`
+	Key        string    `datastore:"-" goon:"id"`
+	Endpoint   string    `datastore:"endpoint,noindex"`
+	P256dh     []byte    `datastore:"p256dh,noindex"`
+	Auth       []byte    `datastore:"auth,noindex"`
+	CreateDate time.Time `datastore:"create_date,noindex"`
+	AccessDate time.Time `datastore:"access_date,noindex"`
 	DeleteFlag bool      `datastore:"delete_flag"`
-	DeleteDate time.Time `datastore:"delete_date, noindex"`
-	Display    string    `datastore:"display,     noindex"`
+	DeleteDate time.Time `datastore:"delete_date,noindex"`
+	Display    string    `datastore:"display,noindex"`
 }
 
 // endpointは文字列として長すぎるので、ハッシュを使ってキーを作成する
