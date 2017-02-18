@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charset="utf-8" />
+        <title>Good Job - 褒めたい、褒められたい -</title>
+        <link rel="stylesheet" href="/style/bootstrap.min.css" />
+        <link rel="stylesheet" href="/style/webpush.css" />
+        <script src="/js/enter.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <script type="text/javascript">
+            let roomId={{.RoomId}}
+        </script>
+        <div class="container">
+            <BR>
+            <div id="control" class="input-group">
+                <input type="text" class="form-control" id="display" placeholder="ニックネーム" disabled>
+                <button id="subscribe" class="btn btn-primary" disabled></button>
+                <button id="test" class="btn btn-primary" disabled>通知をテストする</button>
+            </div>
+            <div id="detail"><BR>
+                <dl class="dl-horizontal">
+                    <dt>ルームの説明</dt><dd>{{.Description}}</dd>
+                </dl>
+            </div>
+            <h2>メンバーにGood Job!を送る</h2>
+            <div id="send">
+                <input type="text" class="form-control" id="message" placeholder="メッセージ" disabled>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>ニックネーム</th>
+                            <th>ポイント</th>
+                        </tr>
+                    </thead>
+                    <tbody id="memberList">
+                    </tbody>
+                </table>
+                <BR>
+            </div>
+        </div>
+    </body>
+</html>
