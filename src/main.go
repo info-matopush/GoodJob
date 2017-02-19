@@ -36,6 +36,34 @@ type DetailData struct {
 	RecvCount    int64
 	ToMessage    []data.Message
 	FromMessage  []data.Message
+	Icon         string
+}
+
+func calcLevel(sendCount, recvCount int64) (int64) {
+	total := sendCount + recvCount
+	if (total < 5) {
+		return 0
+	} else if (total < 10) {
+		return 1
+	} else if (total < 20) {
+		return 2
+	} else if (total < 40) {
+		return 3
+	}
+	return 4
+}
+
+func levelToIconUrl(level int64) (string) {
+	if level == 0 {
+		return "/img/stamp_message5.png"
+	} else if level == 1 {
+		return "/img/stamp_message4.png"
+	} else if level == 2 {
+		return "/img/stamp_message3.png"
+	} else if level == 3 {
+		return "/img/stamp_message2.png"
+	}
+	return "/img/stamp_message1.png"
 }
 
 func detailHandler(w http.ResponseWriter, r *http.Request) {
@@ -52,6 +80,9 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	message1, message2 := data.GetAllMessage(ctx, memberKey)
 
+	level := calcLevel(member.SendCount, member.RecvCount)
+	icon := levelToIconUrl(level)
+
 	detail := DetailData{
 		Display:     member.Display,
 		CreateDate:  member.CreateDate,
@@ -59,6 +90,7 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 		RecvCount:   member.RecvCount,
 		ToMessage:   message1,
 		FromMessage: message2,
+		Icon:        icon,
 	}
 
 	t, err := template.ParseFiles("templates/detail.html")

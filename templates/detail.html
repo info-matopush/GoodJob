@@ -12,14 +12,20 @@
     </head>
     <body>
         <div class="container">
-            <BR>
-            <div id="detail"><BR>
-                <dl class="dl-horizontal">
-                    <dt>ニックネーム</dt><dd>{{.Display}}</dd>
-                    <dt>作成日</dt><dd>{{.CreateDate}}</dd>
-                    <dt>送信ポイント</dt><dd>{{.SendCount}}</dd>
-                    <dt>受信ポイント</dt><dd>{{.RecvCount}}</dd>
-                </dl>
+            <div class="row">
+                <div class="detail">
+                    <div class="media-left">
+                        <img class="pull-center col-md-3" style='width:128px;' src="{{.Icon}}" />
+                    </div>
+                    <div class="media-body" style='vertical-align:bottom;'>
+                        <dl class="dl-horizontal">
+                            <dt>ニックネーム</dt><dd>{{.Display}}</dd>
+                            <dt>作成日</dt><dd>{{.CreateDate}}</dd>
+                            <dt>送信ポイント</dt><dd>{{.SendCount}}</dd>
+                            <dt>受信ポイント</dt><dd>{{.RecvCount}}</dd>
+                        </dl>
+                    </div>
+                </div>
             </div>
             <h2>Good Job!を見る</h2>
             <div class="row">
