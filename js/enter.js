@@ -175,50 +175,51 @@ function enablePushRequest(sub) {
     }).then(function(text) {
         _('display').value = text;
 
+        setTimeout(function() {
+            // subscriptionの登録が完了したらメンバーリストを取得する
+            fetch('/api/list', {
+                method: 'post',
+                body: data
+            }).then(function(resp) {
+                return resp.json();
+            }).then(function(json) {
+                console.log(json);
+                // 動的にリストを作る
+                for (var i = 0; i < json.length; i++) {
+                    let display = json[i].Display;
+                    let endpoint = json[i].Endpoint;
 
-        // subscriptionの登録が完了したらメンバーリストを取得する
-        fetch('/api/list', {
-            method: 'post',
-            body: data
-        }).then(function(resp) {
-            return resp.json();
-        }).then(function(json) {
-            console.log(json);
-            // 動的にリストを作る
-            for (var i = 0; i < json.length; i++) {
-                let display = json[i].Display;
-                let endpoint = json[i].Endpoint;
+                    let button = document.createElement('button');
+                    button.type = 'button';
+                    button.id = endpoint;
+                    button.class = 'btn btn-success';
+                    button.textContent = '相手に送信する';
+                    button.onclick = function(){sendMessage(endpoint)};
 
-                let button = document.createElement('button');
-                button.type = 'button';
-                button.id = endpoint;
-                button.class = 'btn btn-success';
-                button.textContent = '相手に送信する';
-                button.onclick = function(){sendMessage(endpoint)};
+                    let nickname = document.createElement('a');
+                    nickname.href = '/d?m=' + json[i].Key;
+                    nickname.textContent = display;
 
-                let nickname = document.createElement('a');
-                nickname.href = '/d?m=' + json[i].Key;
-                nickname.textContent = display;
+                    let tr = document.createElement('tr');
+                    let td1 = document.createElement('td');
+                    if (endpoint !== subscription.endpoint) {
+                        td1.appendChild(button);
+                    }
+                    tr.appendChild(td1);
+                    let td2 = document.createElement('td');
+                    td2.appendChild(nickname);
+                    tr.appendChild(td2);
+                    let td3 = document.createElement('td');
+                    td3.textContent = json[i].SendCount;
+                    tr.appendChild(td3);
+                    let td4 = document.createElement('td');
+                    td4.textContent = json[i].RecvCount;
+                    tr.appendChild(td4);
 
-                let tr = document.createElement('tr');
-                let td1 = document.createElement('td');
-                if (endpoint !== subscription.endpoint) {
-                    td1.appendChild(button);
+                    _('memberList').appendChild(tr);
                 }
-                tr.appendChild(td1);
-                let td2 = document.createElement('td');
-                td2.appendChild(nickname);
-                tr.appendChild(td2);
-                let td3 = document.createElement('td');
-                td3.textContent = json[i].SendCount;
-                tr.appendChild(td3);
-                let td4 = document.createElement('td');
-                td4.textContent = json[i].RecvCount;
-                tr.appendChild(td4);
-
-                _('memberList').appendChild(tr);
-            }
-        });
+            });
+        }, 1000);
     });
 }
 

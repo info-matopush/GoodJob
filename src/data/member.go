@@ -35,11 +35,6 @@ func MemberTouch(ctx context.Context, roomId, endpoint, display string) {
 
 	err := g.Get(&m)
 	if err != nil {
-		// メンバー初回登録
-		if display == "" {
-			display = "名無し"
-		}
-
 		m.RoomId = roomId
 		m.Endpoint = endpoint
 		m.Display = display

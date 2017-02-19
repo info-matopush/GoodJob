@@ -31,11 +31,11 @@ func init() {
 
 type DetailData struct {
 	Display      string
-	CreateDate   time.Time
+	CreateDate   string
 	SendCount    int64
 	RecvCount    int64
-	ToMessage    []data.Message
-	FromMessage  []data.Message
+	ToMessage    []data.MessageInfo
+	FromMessage  []data.MessageInfo
 	Icon         string
 }
 
@@ -66,7 +66,12 @@ func levelToIconUrl(level int64) (string) {
 	return "/img/stamp_message1.png"
 }
 
+const (
+	date_format = "2006-01-02 15:04:05"
+)
+
 func detailHandler(w http.ResponseWriter, r *http.Request) {
+	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
 	ctx := appengine.NewContext(r)
 
 	memberKey := r.FormValue("m")
@@ -78,14 +83,14 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 		log.Infof(ctx, "datastore get error. %v", err)
 		return;
 	}
-	message1, message2 := data.GetAllMessage(ctx, memberKey)
+	message1, message2 := data.GetAllMessageInfo(ctx, memberKey)
 
 	level := calcLevel(member.SendCount, member.RecvCount)
 	icon := levelToIconUrl(level)
 
 	detail := DetailData{
 		Display:     member.Display,
-		CreateDate:  member.CreateDate,
+		CreateDate:  member.CreateDate.In(jst).Format(date_format),
 		SendCount:   member.SendCount,
 		RecvCount:   member.RecvCount,
 		ToMessage:   message1,

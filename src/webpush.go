@@ -14,7 +14,6 @@ import (
 	"src/data/endpoint"
 	"src/data"
 	"fmt"
-	"time"
 )
 
 type Notification struct {
@@ -37,6 +36,19 @@ func registHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if d == "" {
+		// ニックネームが入力されていなかったら...
+		// プッシュ通知を有効にした状態で別のルームに入った場合にここを通る
+		lastEndpoint, err := endpoint.Get(ctx, e)
+		if err != nil {
+			// 登録ずみの情報もなし
+			d = "名無し"
+		} else {
+			// 登録済みの情報からニックネームを得る
+			d = lastEndpoint.Display
+		}
+	}
+
 	ei := &endpoint.EndpointInfo{
 		Endpoint: e,
 		Auth:     auth,
@@ -48,10 +60,6 @@ func registHandler(w http.ResponseWriter, r *http.Request) {
 
 	roomId := r.FormValue("roomId")
 	data.MemberTouch(ctx, roomId, e, d)
-
-	// todo:以下のwait処理はいずれJavaScript側に持っていく
-	// Memberに反映されるのをちょっとだけ待つ
-	time.Sleep(1 * time.Second)
 
 	// 登録されている表示名（ニックネーム）を返す
 	ei, _ = endpoint.Get(ctx, ei.Endpoint)
